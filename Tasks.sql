@@ -8,16 +8,11 @@ WHERE c.mat_code = m.mat_code
 AND c.oper_num = value  -- определяется операцией
 
 --RA
-[oper_num, det_code, consumption]([oper_num = ](MaterialsConsumption))*[name](Materials)
--- или
-[c.oper_num, m.name, c.det_code, c.consumption]([oper_num = value](MaterialsConsumption c))*(Materials m)
--- или
 [oper_num, name, det_code, consumption]([oper_num = value](MaterialsConsumption))*(Materials)
 
 -- RIK
-FIND{(c.oper_num, m.name, c.det_code, c.consumption) | c in MaterialsConsumption, m in Materials} 
+НАЙТИ{(c.oper_num, m.name, c.det_code, c.consumption) | c in MaterialsConsumption, m in Materials} 
 		c.mat_code = m.mat_code & c.oper_num = value
-
 
 
 
@@ -25,14 +20,23 @@ FIND{(c.oper_num, m.name, c.det_code, c.consumption) | c in MaterialsConsumption
 SELECT cost.det_code, cost.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
 FROM ManufacturingCosts cost JOIN MaterialsConsumption consump ON consump.det_code = cost.det_code
 WHERE consumption > 20
-AND consump.mat_code IN (SELECT mat_code FROM Materials WHERE price > 100)
-AND cost.oper_num = value -- определяется операцией
+AND EXISTS (SELECT mat_code FROM Materials WHERE price > 100)
+AND cost.oper_num = 2 -- определяется операцией
+
+SELECT 5 FORALL 1 EXISTS 4
 
 -- RA
-[det_code, oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time]([oper_num = ](ManufacturingCosts))*([consumption > 20](MaterialsConsumption)) *([price > 100](Materials))
+[det_code, oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time]
+([oper_num = value](ManufacturingCosts))*([consumption > 20](MaterialsConsumption)) *([price > 100](Materials))
+
+--5. Вывести покупателей, которые купили в этом году все товары меньше 100
+
+--       НАЙТИ{ (c.name) | c in Cust}
+--                FORALL (p in Prod) p.price < 100  ->
+--                  ( EXISTS(o in Ord) o.id_cust=c.id & o.ip_prod=p.id )
 
 -- RIK
-FIND{(c.det_code, c.oper_num, c.worker_code, c.worker_qualif, c.tariff_code, c.pf_time, c.piece_time) | c in ManufacturingCosts} 
-		EXISTS(mc in MaterialsConsumption) c.det_code = mc.det_code & mc.consumption > 20 &
-		(EXISTS(m in Materials) mc.mat_code = m.mat_code & m.price > 100 &
-		c.oper_num = value)
+НАЙТИ{(c.det_code, c.oper_num, c.worker_code, c.worker_qualif, c.tariff_code, c.pf_time, c.piece_time) | c in ManufacturingCosts} 
+		FORALL (m in Materials) m.price > 100 &
+		( EXISTS(mc in MaterialsConsumption) mc.det_code = c.det_code & mc.mat_code = m.mat_code & mc.consumption > 20 ) &
+		c.oper_num = value
