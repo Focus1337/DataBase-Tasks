@@ -27,7 +27,7 @@ AND cost.oper_num = 2 -- определяется операцией
 
 -- RA
 [det_code, oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time]
-([oper_num = value](ManufacturingCosts))*([consumption > 20](MaterialsConsumption)) *([price > 100](Materials))
+[oper_num = value](ManufacturingCosts)*([price > 100](Materials)) / ([consumption > 20](MaterialsConsumption))
 
 -- RIK
 НАЙТИ{(c.det_code, c.oper_num, c.worker_code, c.worker_qualif, c.tariff_code, c.pf_time, c.piece_time) | c in ManufacturingCosts} 
