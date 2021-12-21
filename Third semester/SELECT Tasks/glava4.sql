@@ -18,4 +18,4 @@ SELECT * FROM Customers WHERE rating <= 100 and city != 'Rome'
 SELECT * FROM Salespeople WHERE not (city = 'London' and comm > 0.11)
 
 -- 7)  Напишите запрос к таблице Продавцов, который дает всех Продавцов таких что, если он из города London, то его комиссионные не выше 0.11, а иначе - выше 0.13. 
-SELECT * FROM Salespeople WHERE (city = 'London' and comm <= 0.11) or comm > 0.13
+SELECT * FROM Salespeople WHERE (city = 'London' and comm <= 0.11) or (city != 'London' and comm > 0.13)
