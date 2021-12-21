@@ -28,6 +28,7 @@ CREATE TABLE Cashiers
 
 CREATE TABLE Deals
 (
+	id INT CONSTRAINT pk_deal PRIMARY KEY,
 	sold_cur_id INT,
 	bought_cur_id INT,
 	cashier_id INT,
@@ -37,8 +38,7 @@ CREATE TABLE Deals
 	sold_amount FLOAT,
 	bought_amount FLOAT,
 	
-	-- один к одному
-	CONSTRAINT pk_deal PRIMARY KEY(cashier_id),
+	-- один ко многим
 	CONSTRAINT fk_deal_cashier FOREIGN KEY(cashier_id)
 			REFERENCES Cashiers(id)
 			on delete cascade on update cascade,
