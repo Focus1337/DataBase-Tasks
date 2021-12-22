@@ -17,27 +17,11 @@ AND c.oper_num = value  -- определ€етс€ операцией
 
 
 -- Task 2
---SELECT cost.det_code, cost.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
---FROM ManufacturingCosts cost JOIN MaterialsConsumption consump ON consump.det_code = cost.det_code
---WHERE consumption > 20
---AND EXISTS (SELECT mat_code FROM Materials WHERE price > 100)
-
-SELECT cost.det_code, cost.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
-FROM ManufacturingCosts cost
-WHERE EXISTS (SELECT mc.det_code, mc.oper_num 
-			  FROM MaterialsConsumption mc 
-			  WHERE mc.consumption > 20 
-			  AND mc.mat_code in (SELECT mat_code
-								  FROM Materials
-								  WHERE price > 100))
-
-SELECT mat_code
-FROM Materials
-WHERE price > 100
-
-SELECT det_code, mat_code, oper_num
-FROM MaterialsConsumption
-WHERE consumption > 20
+SELECT c.det_code, c.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
+FROM ManufacturingCosts c, Materials m, MaterialsConsumption mc
+WHERE m.price > 100
+	  AND EXISTS (SELECT mc.det_code, mc.oper_num WHERE mc.consumption > 20)
+	  AND c.det_code = mc.det_code AND c.oper_num = mc.oper_num AND m.mat_code = mc.mat_code
 
 -- ѕо услови€м задачи: SELECT 5 FORALL 1 EXISTS 4
 
