@@ -17,16 +17,33 @@ AND c.oper_num = value  -- определяется операцией
 
 
 -- Task 2
+--SELECT cost.det_code, cost.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
+--FROM ManufacturingCosts cost JOIN MaterialsConsumption consump ON consump.det_code = cost.det_code
+--WHERE consumption > 20
+--AND EXISTS (SELECT mat_code FROM Materials WHERE price > 100)
+
 SELECT cost.det_code, cost.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
-FROM ManufacturingCosts cost JOIN MaterialsConsumption consump ON consump.det_code = cost.det_code
+FROM ManufacturingCosts cost
+WHERE EXISTS (SELECT mc.det_code, mc.oper_num 
+			  FROM MaterialsConsumption mc 
+			  WHERE mc.consumption > 20 
+			  AND mc.mat_code in (SELECT mat_code
+								  FROM Materials
+								  WHERE price > 100))
+
+SELECT mat_code
+FROM Materials
+WHERE price > 100
+
+SELECT det_code, mat_code, oper_num
+FROM MaterialsConsumption
 WHERE consumption > 20
-AND EXISTS (SELECT mat_code FROM Materials WHERE price > 100)
 
 -- По условиям задачи: SELECT 5 FORALL 1 EXISTS 4
 
 -- RA
 [det_code, oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time]
-[oper_num = value](ManufacturingCosts)*([price > 100](Materials)) / ([consumption > 20](MaterialsConsumption))
+(([det_code, mat_code, oper_num][consumption > 20](MaterialsConsumption)) / ([mat_code][price > 100](Materials)))*(ManufacturingCosts)
 
 -- RIK
 НАЙТИ{(c.det_code, c.oper_num, c.worker_code, c.worker_qualif, c.tariff_code, c.pf_time, c.piece_time) | c in ManufacturingCosts} 
