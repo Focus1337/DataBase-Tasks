@@ -17,11 +17,15 @@ AND c.oper_num = value  -- определ€етс€ операцией
 
 
 -- Task 2
-SELECT c.det_code, c.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time
-FROM ManufacturingCosts c, Materials m, MaterialsConsumption mc
-WHERE m.price > 100
-	  AND EXISTS (SELECT mc.det_code, mc.oper_num WHERE mc.consumption > 20)
-	  AND c.det_code = mc.det_code AND c.oper_num = mc.oper_num AND m.mat_code = mc.mat_code
+SELECT c.det_code, c.oper_num, worker_code, worker_qualif, tariff_code, pf_time, piece_time 
+FROM ManufacturingCosts c
+WHERE NOT EXISTS (SELECT * FROM Materials m 
+				  WHERE m.price > 100 
+						AND NOT EXISTS (SELECT * FROM MaterialsConsumption mc
+										WHERE mc.consumption > 20 
+											  AND mc.det_code = c.det_code
+											  AND mc.oper_num = c.oper_num
+											  AND mc.mat_code = m.mat_code))
 
 -- ѕо услови€м задачи: SELECT 5 FORALL 1 EXISTS 4
 
